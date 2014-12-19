@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# fetch all submodules
+git submodule foreach git pull
+
+# compile confd
+cd confd
+go get
+go build
+cd -
+
+# compile etcd
+cd etcd
+go get
+go build
+cd -
+
+# move binaries
+mkdir -p container/bin
+mv etcd/etcd container/bin
+mv confd/confd container/bin

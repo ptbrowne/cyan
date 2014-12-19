@@ -1,0 +1,31 @@
+global
+    maxconn 256
+
+defaults
+    mode http
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+{{range $dir := lsdir "/cyan" }}
+{{$haproxy_options := getv (printf "/cyan/%s/haproxy_options" $dir)}}
+{{$haproxy_options := json $haproxy_options }}
+{{$upstreams := printf "/cyan/%s/upstream/*" $dir}}
+
+frontend http-in
+    bind *:{{$haproxy_options.frontend_port }}
+    default_backend {{base $dir}}
+
+backend {{base $dir}}
+    cookie {{$haproxy_options.cookie}}
+    balance {{$haproxy_options.balance}}
+    {{range gets $upstreams }}{{$data := json .Value}}
+    server {{base .Key}} {{$data.addr}} maxconn 32 cookie {{base .Key}} weight {{$data.weight}}
+    {{end}}
+
+{{ end }}
+
+
+listen admin
+    bind *:8081
+    stats enable

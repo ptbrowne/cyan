@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker build -t cyan-server .
+echo 'cyan-server image ready. launch with ./launch'

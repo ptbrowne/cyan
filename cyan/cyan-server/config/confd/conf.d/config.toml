@@ -1,0 +1,8 @@
+[template]
+src = "haproxy.cfg.tmpl"
+dest = "/haproxy.cfg"
+keys = [
+    "/cyan"
+]
+check_cmd = "haproxy -c -f {{.src}}"
+reload_cmd = "haproxy -D -f /haproxy.cfg -p /haproxy.pid -sf $(cat /haproxy.pid)"
